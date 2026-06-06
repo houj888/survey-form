@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>调研问卷 - 管理后台</title>
+<style>
+:root{--primary:#2563EB;--primary-dark:#1D4ED8;--primary-light:#DBEAFE;--success:#10B981;--warning:#F59E0B;--danger:#EF4444;--gray-50:#F9FAFB;--gray-100:#F3F4F6;--gray-200:#E5E7EB;--gray-300:#D1D5DB;--gray-400:#9CA3AF;--gray-500:#6B7280;--gray-600:#4B5563;--gray-700:#374151;--gray-800:#1F2937;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Microsoft YaHei','PingFang SC',sans-serif;background:var(--gray-50);color:var(--gray-800);line-height:1.6;}
+.admin-header{background:linear-gradient(135deg,#1E3A8A,#2563EB);color:#fff;padding:20px 24px;display:flex;align-items:center;justify-content:space-between;}
+.admin-header h1{font-size:18px;}
+.admin-header .stats{display:flex;gap:20px;font-size:13px;}
+.admin-header .stat-num{font-size:24px;font-weight:700;}
+.container{max-width:1200px;margin:0 auto;padding:20px 16px;}
+.login-box{max-width:380px;margin:80px auto;background:#fff;border-radius:12px;padding:40px;box-shadow:0 10px 30px rgba(0,0,0,0.1);}
+.login-box h2{text-align:center;margin-bottom:24px;font-size:18px;}
+.login-box input{width:100%;padding:10px 14px;border:1px solid var(--gray-200);border-radius:8px;font-size:14px;margin-bottom:12px;outline:none;font-family:inherit;}
+.login-box input:focus{border-color:var(--primary);}
+.login-box button{width:100%;padding:10px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;}
+.toolbar{display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;}
+.toolbar button{padding:8px 16px;border:1px solid var(--gray-200);border-radius:8px;background:#fff;cursor:pointer;font-size:13px;font-family:inherit;transition:all 0.15s;}
+.toolbar button:hover{border-color:var(--primary);color:var(--primary);}
+.toolbar .btn-primary{background:var(--primary);color:#fff;border-color:var(--primary);}
+.toolbar .btn-danger{color:var(--danger);border-color:#FCA5A5;}
+.toolbar .btn-danger:hover{background:#FEF2F2;}
+.record-card{background:#fff;border-radius:10px;padding:20px;margin-bottom:12px;border:1px solid var(--gray-200);box-shadow:0 1px 3px rgba(0,0,0,0.05);}
+.record-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.record-meta{font-size:13px;color:var(--gray-500);}
+.record-meta span{margin-right:16px;}
+.record-name{font-size:16px;font-weight:600;}
+.detail-toggle{color:var(--primary);cursor:pointer;font-size:13px;border:none;background:none;font-family:inherit;}
+.detail-toggle:hover{text-decoration:underline;}
+.record-detail{display:none;margin-top:16px;padding-top:16px;border-top:1px solid var(--gray-100);}
+.record-detail.show{display:block;}
+.answer-group{margin-bottom:16px;}
+.answer-group h4{font-size:13px;font-weight:600;color:var(--primary);margin-bottom:8px;padding-bottom:4px;border-bottom:1px solid var(--gray-100);}
+.answer-item{display:flex;gap:8px;padding:4px 0;font-size:13px;}
+.answer-q{color:var(--gray-500);min-width:80px;}
+.answer-a{color:var(--gray-800);font-weight:500;}
+.empty-state{text-align:center;padding:60px 20px;color:var(--gray-400);}
+.empty-state .icon{font-size:48px;margin-bottom:12px;}
+</style>
+</head>
+<body>
+
+<div id="loginView">
+  <div class="login-box">
+    <h2>管理后台登录</h2>
+    <input type="text" id="login_user" placeholder="用户名" value="admin">
+    <input type="password" id="login_pass" placeholder="密码">
+    <button onclick="doLogin()">登录</button>
+  </div>
+</div>
+
+<div id="adminView" style="display:none;">
+  <div class="admin-header">
+    <h1>调研问卷管理后台</h1>
+    <div class="stats">
+      <div>提交数<div class="stat-num" id="statTotal">0</div></div>
+    </div>
+  </div>
+  <div class="container">
+    <div class="toolbar">
+      <button class="btn-primary" onclick="loadData()">刷新数据</button>
+      <button onclick="exportCSV()">导出CSV</button>
+      <button class="btn-danger" onclick="clearAll()">清空所有记录</button>
+    </div>
+    <div id="records"></div>
+  </div>
+</div>
+
+<script>
+let submissions = [];
+const authKey = 'survey_admin_auth';
+const STORAGE_KEY = 'survey_submissions';
+
+function doLogin() {
+  const u = document.getElementById('login_user').value;
+  const p = document.getElementById('login_pass').value;
+  if (u !== 'admin' || p !== 'survey2026') { alert('用户名或密码错误'); return; }
+  localStorage.setItem(authKey, btoa(u+':'+p));
+  checkAuth();
+}
+
+function checkAuth() {
+  const cred = localStorage.getItem(authKey);
+  if (!cred) return;
+  try { const d = atob(cred); if (d !== 'admin:survey2026') { localStorage.removeItem(authKey); return; } } catch { return; }
+  document.getElementById('loginView').style.display = 'none';
+  document.getElementById('adminView').style.display = 'block';
+  loadData();
+}
+
+function loadData() {
+  try {
+    submissions = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+  } catch { submissions = []; }
+  document.getElementById('statTotal').textContent = submissions.length;
+  renderRecords();
+}
+
+function renderRecords() {
+  const el = document.getElementById('records');
+  if (!submissions.length) { el.innerHTML='<div class="empty-state"><div class="icon">&#x1F4CB;</div><div>暂无调研记录</div></div>'; return; }
+  el.innerHTML = submissions.slice().reverse().map((s,i) => {
+    const answers = s.answers || {};
+    const answerKeys = Object.keys(answers);
+    const mainAnswers = answerKeys.filter(k => !k.endsWith('_note') && !k.includes('_levels') && !k.includes('_weights') && !k.includes('_roles') && !k.includes('_new') && !k.includes('_migration') && !k.includes('scene'));
+    let detailHtml = '';
+    // Group by question prefix
+    const groups = {};
+    mainAnswers.forEach(k => {
+      const prefix = k.replace(/\d+.*/,'').replace(/([a-z])([A-Z])/,'$1');
+      if (!groups[prefix]) groups[prefix] = [];
+      groups[prefix].push(k);
+    });
+    Object.entries(groups).forEach(([g, keys]) => {
+      detailHtml += '<div class="answer-group"><h4>'+g+'</h4>';
+      keys.forEach(k => {
+        let v = answers[k];
+        if (typeof v === 'object') v = JSON.stringify(v, null, 2);
+        detailHtml += '<div class="answer-item"><span class="answer-q">'+k+'</span><span class="answer-a">'+v+'</span></div>';
+      });
+      detailHtml += '</div>';
+    });
+    // Special: approval levels
+    if (answers.Q5_2_levels) {
+      const lv = answers.Q5_2_levels;
+      detailHtml += '<div class="answer-group"><h4>Q5.2 审批层级</h4>';
+      [lv.lv1,lv.lv2,lv.lv3].forEach((l,i) => {
+        if (l && (l.amt || l.from)) detailHtml += '<div class="answer-item"><span class="answer-q">层级'+(i+1)+'</span><span class="answer-a">'+JSON.stringify(l)+'</span></div>';
+      });
+      detailHtml += '</div>';
+    }
+    // Weights
+    if (answers.Q7_1_weights) {
+      const w = answers.Q7_1_weights;
+      detailHtml += '<div class="answer-group"><h4>Q7.1 绩效权重</h4><div class="answer-item"><span class="answer-a">质量'+(w.quality||'-')+'% | 交期'+(w.delivery||'-')+'% | 服务'+(w.service||'-')+'%</span></div></div>';
+    }
+    // Notes
+    const notes = answerKeys.filter(k => k.endsWith('_note'));
+    if (notes.length) {
+      detailHtml += '<div class="answer-group"><h4>补充说明</h4>';
+      notes.forEach(k => { detailHtml += '<div class="answer-item"><span class="answer-q">'+k.replace('_note','')+'</span><span class="answer-a">'+answers[k]+'</span></div>'; });
+      detailHtml += '</div>';
+    }
+
+    return '<div class="record-card"><div class="record-header"><div><span class="record-name">'+(s.respondent||'匿名')+'</span><div class="record-meta"><span>'+s.company+'</span><span>'+(s.phone||'')+'</span><span>'+(s.email||'')+'</span><span>'+(s.submittedAt||'').replace('T',' ').slice(0,19)+'</span><span>时长:'+Math.round((s.duration||0)/60)+'分钟</span></div></div><button class="detail-toggle" onclick="this.nextElementSibling.classList.toggle(\'show\');this.textContent=this.nextElementSibling.classList.contains(\'show\')?\'收起详情\':\'查看详情\';">查看详情</button></div><div class="record-detail">'+detailHtml+'</div></div>';
+  }).join('');
+}
+
+function exportCSV() {
+  if (!submissions.length) { alert('暂无数据可导出'); return; }
+  const allKeys = new Set();
+  submissions.forEach(s => {
+    Object.keys(s.answers || {}).forEach(k => allKeys.add(k));
+  });
+  const keys = [...allKeys].sort();
+  const header = ['ID', '填写人', '公司', '联系电话', '邮箱', '提交时间', '填写时长(秒)', ...keys];
+  const rows = submissions.map(s => [
+    s.id, s.respondent, s.company, s.phone, s.email,
+    s.submittedAt, s.duration,
+    ...keys.map(k => {
+      const v = s.answers?.[k];
+      if (v === undefined || v === null) return '';
+      if (Array.isArray(v)) return v.join('; ');
+      if (typeof v === 'object') return JSON.stringify(v);
+      return String(v);
+    })
+  ]);
+  const csv = '\uFEFF' + [header, ...rows].map(r => r.map(c => '"'+String(c).replace(/"/g,'""')+'"').join(',')).join('\n');
+  const blob = new Blob([csv], {type:'text/csv;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'survey_results.csv'; a.click();
+  URL.revokeObjectURL(url);
+}
+
+function clearAll() {
+  if (!confirm('确定清空所有调研记录？此操作不可恢复！')) return;
+  localStorage.removeItem(STORAGE_KEY);
+  loadData();
+}
+
+checkAuth();
+</script>
+</body>
+</html>

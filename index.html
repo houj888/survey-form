@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>供应商采购及材料管理系统 — 业务调研问卷</title>
+<style>
+:root{--primary:#2563EB;--primary-dark:#1D4ED8;--primary-light:#DBEAFE;--success:#10B981;--warning:#F59E0B;--danger:#EF4444;--gray-50:#F9FAFB;--gray-100:#F3F4F6;--gray-200:#E5E7EB;--gray-300:#D1D5DB;--gray-400:#9CA3AF;--gray-500:#6B7280;--gray-600:#4B5563;--gray-700:#374151;--gray-800:#1F2937;--radius:12px;--shadow:0 1px 3px rgba(0,0,0,0.1),0 1px 2px rgba(0,0,0,0.06);}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Microsoft YaHei','PingFang SC','Helvetica Neue',sans-serif;background:var(--gray-50);color:var(--gray-800);line-height:1.6;}
+.survey-header{background:linear-gradient(135deg,#1E3A8A,#2563EB,#3B82F6);color:#fff;padding:28px 24px;text-align:center;position:sticky;top:0;z-index:100;box-shadow:0 4px 20px rgba(37,99,235,0.3);}
+.survey-header h1{font-size:20px;font-weight:700;margin-bottom:4px;}
+.survey-header p{font-size:13px;opacity:0.8;}
+.progress-bar{background:rgba(255,255,255,0.2);height:4px;margin-top:14px;border-radius:2px;overflow:hidden;}
+.progress-fill{height:100%;background:#fff;border-radius:2px;transition:width 0.4s ease;width:0%;}
+.progress-text{font-size:12px;opacity:0.7;margin-top:6px;}
+.container{max-width:860px;margin:0 auto;padding:20px 16px 80px;}
+.section-card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:20px;overflow:hidden;border:1px solid var(--gray-200);}
+.section-header{padding:18px 24px;cursor:pointer;display:flex;align-items:center;gap:12px;transition:background 0.2s;}
+.section-header:hover{background:var(--gray-50);}
+.section-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.section-header h2{font-size:15px;font-weight:600;flex:1;}
+.badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:99px;font-size:10px;font-weight:600;margin-left:8px;}
+.badge-high{background:#FEE2E2;color:#DC2626;}
+.badge-mid{background:#FEF3C7;color:#D97706;}
+.badge-low{background:#D1FAE5;color:#059669;}
+.section-toggle{font-size:11px;color:var(--primary);transition:transform 0.3s;}
+.section-toggle.collapsed{transform:rotate(-90deg);}
+.section-body{padding:0 24px 24px;display:block;}
+.section-body.hidden{display:none;}
+.question{margin-bottom:28px;padding-bottom:18px;border-bottom:1px solid var(--gray-100);}
+.question:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0;}
+.q-title{font-size:13.5px;font-weight:600;color:var(--gray-800);margin-bottom:12px;line-height:1.6;}
+.q-desc{font-size:12px;color:var(--gray-500);margin-bottom:8px;padding:8px 12px;background:var(--gray-50);border-radius:8px;border-left:3px solid var(--primary);}
+.option-group{display:flex;flex-direction:column;gap:6px;}
+.option-item{display:flex;align-items:flex-start;gap:10px;padding:9px 12px;border:1px solid var(--gray-200);border-radius:8px;cursor:pointer;transition:all 0.15s;font-size:13px;line-height:1.5;}
+.option-item:hover{border-color:var(--primary);background:var(--primary-light);}
+.option-item.selected{border-color:var(--primary);background:var(--primary-light);}
+.option-item input[type="radio"]{margin-top:3px;accent-color:var(--primary);cursor:pointer;}
+.option-code{font-weight:700;color:var(--primary);min-width:18px;}
+.text-input{width:100%;padding:8px 12px;border:1px solid var(--gray-200);border-radius:8px;font-size:13px;outline:none;transition:border-color 0.2s;font-family:inherit;}
+.text-input:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(37,99,235,0.1);}
+textarea.text-input{min-height:56px;resize:vertical;}
+.table-input{width:100%;border-collapse:collapse;font-size:12px;margin-top:8px;}
+.table-input th{background:var(--gray-50);padding:7px 8px;text-align:left;font-weight:600;font-size:11px;color:var(--gray-600);border-bottom:2px solid var(--gray-200);}
+.table-input td{padding:5px 6px;border-bottom:1px solid var(--gray-100);}
+.table-input input,.table-input select{width:100%;padding:5px 7px;border:1px solid var(--gray-200);border-radius:5px;font-size:11px;outline:none;font-family:inherit;}
+.table-input input:focus,.table-input select:focus{border-color:var(--primary);}
+.sub-question{margin-top:14px;padding-left:14px;border-left:2px solid var(--primary-light);}
+.sub-question .q-title{font-size:12.5px;}
+.respondent-card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:24px;margin-bottom:20px;border:1px solid var(--gray-200);}
+.respondent-card h3{font-size:15px;margin-bottom:14px;color:var(--gray-800);}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.form-item{display:flex;flex-direction:column;gap:4px;}
+.form-item label{font-size:12px;font-weight:600;color:var(--gray-600);}
+.form-item .required::after{content:'*';color:var(--danger);margin-left:2px;}
+.submit-area{text-align:center;padding:32px 0;}
+.submit-btn{display:inline-flex;align-items:center;gap:8px;padding:14px 48px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;border:none;border-radius:10px;font-size:16px;font-weight:600;cursor:pointer;transition:all 0.2s;box-shadow:0 4px 12px rgba(37,99,235,0.3);}
+.submit-btn:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(37,99,235,0.4);}
+.submit-btn:disabled{opacity:0.5;cursor:not-allowed;transform:none;}
+.success-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:9999;display:none;}
+.success-overlay.show{display:flex;}
+.success-box{background:#fff;border-radius:16px;padding:48px 40px;text-align:center;max-width:420px;}
+.success-icon{width:72px;height:72px;background:#D1FAE5;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:36px;}
+.success-box h2{font-size:20px;margin-bottom:8px;}
+.success-box p{font-size:14px;color:var(--gray-500);margin-bottom:24px;}
+.inline-input{width:70px;padding:4px;border:1px solid var(--gray-200);border-radius:4px;margin:0 4px;font-size:12px;text-align:center;}
+@media(max-width:640px){.form-grid{grid-template-columns:1fr;}.section-body{padding:0 14px 14px;}.section-header{padding:14px;}.container{padding:12px 8px 80px;}}
+</style>
+</head>
+<body>
+<div class="survey-header">
+  <h1>供应商采购及材料管理系统 — 业务调研问卷</h1>
+  <p>版本 V1.0 | 编制单位：智建美住科技-产品部 | 完成期限：2026年6月6日（本周末）</p>
+  <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="progress-text" id="progressText">已填写 0 / 27 题</div>
+</div>
+<div class="container">
+<div class="respondent-card">
+  <div style="background:linear-gradient(135deg,#EEF2FF,#DBEAFE);border-radius:8px;padding:14px 16px;margin-bottom:14px;border:1px solid #93C5FD;">
+    <div style="font-size:13px;font-weight:600;color:#1E40AF;margin-bottom:6px;">请先查看高保真原型，再填写问卷</div>
+    <div style="font-size:12px;color:#2563EB;margin-bottom:4px;">在线预览地址：<a href="http://8b06e9a75dd8445eac779ab6a04e3aa2.codebuddy.cloudstudio.run" target="_blank" style="color:#1D4ED8;text-decoration:underline;">点击打开原型</a></div>
+    <div style="font-size:12px;color:#2563EB;">访问密码：<strong>AI2026</strong></div>
+  </div>
+  <h3>填写人信息</h3>
+  <div class="form-grid">
+    <div class="form-item"><label class="required">姓名</label><input type="text" class="text-input" id="resp_name" placeholder="请输入您的姓名"></div>
+    <div class="form-item"><label class="required">公司/部门</label><input type="text" class="text-input" id="resp_company" placeholder="请输入所属公司/部门"></div>
+    <div class="form-item"><label>联系电话</label><input type="tel" class="text-input" id="resp_phone" placeholder="方便后续沟通确认"></div>
+    <div class="form-item"><label>邮箱</label><input type="email" class="text-input" id="resp_email" placeholder="方便接收调研结果"></div>
+  </div>
+</div>
+<div id="sections"></div>
+<div class="submit-area">
+  <button class="submit-btn" id="submitBtn" onclick="submitSurvey()">提交问卷</button>
+  <div style="margin-top:10px;font-size:12px;color:var(--gray-400);">提交后数据将保存到浏览器本地，管理员可在同一浏览器中查看汇总结果</div>
+</div>
+</div>
+<div class="success-overlay" id="successOverlay"><div class="success-box"><div class="success-icon">&#10004;</div><h2>提交成功</h2><p>感谢您完成本次调研问卷！<br>我们将根据您的反馈推进系统设计。</p><button onclick="location.reload()" style="padding:10px 32px;background:var(--primary);color:#fff;border:none;border-radius:8px;font-size:14px;cursor:pointer;">关闭</button></div></div>
+<script>
+const startTime = Date.now();
+const TOTAL_Q = 27;
+
+// ============ SECTIONS DATA ============
+const sections = [
+  {
+    icon: '&#x1F534;', iconBg: '#FEE2E2', iconColor: '#DC2626',
+    title: '第一部分：三大专项调研（高优先级）', badge: 'high',
+    desc: '关联模块：材料库管理/采购管理/系统管理 | 评审问题：J-01/J-02/J-03/B-01/M-05/P-01/P-02/S-01/S-02/S-03',
+    subSections: [
+      { name: '专项一：材料库全面规范化', questions: [
+        { id:'Q1_1', priority:'high', title:'Q1.1 [高优先级] 材料分类体系确认：当前需求有AB两个方案。请确认本期采用哪套分类？',
+          options:[
+            {code:'A',label:'采用需求文档的15个L1分类（01-结构原料类、02-结构定制类、03-围护类、04-装修类、05-水系统、06-电系统、07-辅材类、08-打包材料、09-家具家电、10-洁具卫浴、11-设备设施、12-生产工具类、13-智能化设备、14-劳保、15-费用）'},
+            {code:'B',label:'采用架构设计的7个L1分类（01-结构定制类、02-围护系统类、03-门窗系统类、04-机电系统类、05-辅材耗材类、06-成品家具设备类、99-其他）'},
+            {code:'C',label:'重新定义分类体系（请在下方填写）'}
+          ], showOn:{C:{type:'table',id:'Q1_1_C_table',headers:['L1编码','一级分类名称','二级分类数量（估算）'],rows:5}}, note:true },
+        { id:'Q1_2', priority:'high', title:'Q1.2 [高优先级] 关于L1=15"费用"类可以类别成材料（物流运输/现场成本/生产运营），是否纳入本期材料库管理范围？',
+          options:[
+            {code:'A',label:'纳入本期，作为独立分类管理，但走简化采购流程（无需验收入库）'},
+            {code:'B',label:'纳入本期，与实物材料走相同流程'},
+            {code:'C',label:'本期不纳入，费用类走线下/财务系统处理'},
+            {code:'D',label:'其他方案：',hasInput:true}
+          ], note:true },
+        { id:'Q1_3', priority:'mid', title:'Q1.3 [中优先级] 材料编码规则确认：采用哪种方案。请确认编码规则：',
+          options:[
+            {code:'A',label:'L1-2位+L2-3位（即code_prefix为5位，如01001）'},
+            {code:'B',label:'L1-2位+L2-2位（即code_prefix为4位，如0100）'},
+            {code:'C',label:'其他规则：',hasInput:true}
+          ], note:true },
+        { id:'Q1_4', priority:'mid', title:'Q1.4 [中优先级] 材料规格参数的标准化程度：当前设计为自由文本填写规格说明。是否需要按分类定义规格模板？',
+          options:[
+            {code:'A',label:'自由文本（当前设计），不同材料规格描述方式灵活'},
+            {code:'B',label:'按一级分类定义规格模板（如"结构原料类"必填厚度、宽度、材质等字段）'},
+            {code:'C',label:'按二级分类定义规格模板（更细粒度，但工作量大）'}
+          ], note:true },
+        { id:'Q1_5', priority:'mid', title:'Q1.5 [中优先级] 材料命名规范：当前仅要求名称最大100字符，是否需要建立命名规则？',
+          options:[
+            {code:'A',label:'不需要，自由命名即可'},
+            {code:'B',label:'需要建立命名规则（如：品牌+材质+规格+型号），系统校验'},
+            {code:'C',label:'需要标准词库，从词库中组合命名'}
+          ], note:true },
+      ]},
+      { name: '专项二：业务流程还原与多方协同', questions: [
+        { id:'Q2_1', priority:'high', title:'Q2.1 [高优先级] 采购申请是否支持多材料合并？当前设计为一份申请对应一种材料。',
+          options:[
+            {code:'A',label:'支持，一份采购申请可包含多种材料（实际业务常见场景）'},
+            {code:'B',label:'不支持，一份申请只能包含一种材料（简化流程）'},
+            {code:'C',label:'支持，但限制最多',inlineInput:{id:'Q2_1_C_num',unit:'种材料',type:'number'}}
+          ], subQuestions:[
+            {id:'Q2_1a',showWhen:'A,C',title:'Q2.1a 一份申请中的多种材料，是否需要指定不同的期望交期？',
+              options:[{code:'A',label:'统一交期（所有材料同一交期）'},{code:'B',label:'逐项指定交期（每种材料可有不同交期）'}]}
+          ], note:true },
+        { id:'Q2_2', priority:'high', title:'Q2.2 [高优先级] 采购订单与供应商的关系：当前设计为1个订单=1个供应商。当一份采购申请包含多种材料且需从不同供应商采购时，如何处理？',
+          options:[
+            {code:'A',label:'系统自动按供应商拆分为多个订单（一个订单对应一个供应商）'},
+            {code:'B',label:'采购人员手动创建多个订单，每个订单选择一个供应商'},
+            {code:'C',label:'允许一个订单包含多个供应商的材料（需修改数据模型）'}
+          ], subQuestions:[
+            {id:'Q2_2a',showWhen:'A',title:'Q2.2a 若选A，拆单后每个订单是否需要独立审批？',
+              options:[{code:'A',label:'是，每个订单独立审批'},{code:'B',label:'否，审批通过后拆单的订单直接生效'}]}
+          ], note:true },
+        { id:'Q2_3', priority:'mid', title:'Q2.3 [中优先级] 退货流程确认：验收不合格后的退货流程，请确认退货业务需求：',
+          isGroup:true, subQuestions:[
+            {id:'Q2_3a',title:'Q2.3a 退货后是否需要补货？',options:[
+              {code:'A',label:'是，退货后自动生成补货采购申请'},
+              {code:'B',label:'是，但需采购人员手动判断是否补货'},
+              {code:'C',label:'否，退货即为结束，需重新发起采购'}
+            ]},
+            {id:'Q2_3b',title:'Q2.3b 退货后的退款处理：',options:[
+              {code:'A',label:'本系统仅记录退货，退款在财务系统处理'},
+              {code:'B',label:'本系统需记录退款状态，并对接财务系统'},
+              {code:'C',label:'本期不考虑退款流程'}
+            ]}
+          ], note:true },
+        { id:'Q2_4', priority:'low', title:'Q2.4 [低优先级] 紧急采购绿色通道规则确认：',
+          isGroup:true, subQuestions:[
+            {id:'Q2_4a',title:'Q2.4a 谁有权发起紧急采购？',options:[
+              {code:'A',label:'所有采购人员'},
+              {code:'B',label:'仅采购管理员及以上'},
+              {code:'C',label:'特定岗位人员：',hasInput:true}
+            ]},
+            {id:'Q2_4b',title:'Q2.4b 紧急采购的审批简化程度？',options:[
+              {code:'A',label:'免审批，直接下单'},
+              {code:'B',label:'单级审批（部门主管）'},
+              {code:'C',label:'限时审批（如4小时未审批自动通过）'}
+            ]},
+            {id:'Q2_4c',title:'Q2.4c 紧急采购是否有金额上限？',options:[
+              {code:'A',label:'无上限'},
+              {code:'B',label:'有上限，单笔不超过',inlineInput:{id:'Q2_4c_B_amount',unit:'元',type:'number'}}
+            ]}
+          ], note:true },
+      ]},
+      { name: '专项三：角色分工与数据分级权限', questions: [
+        { id:'Q3_1', priority:'high', title:'Q3.1 [高优先级] 价格系数机制确认：权限矩阵中方案预算人员看到的是价格x系数后的值，但系数的具体规则未定义。',
+          isGroup:true, subQuestions:[
+            {id:'Q3_1a',title:'Q3.1a 价格系数类型？',options:[
+              {code:'A',label:'全局统一系数（如所有材料价格×1.2）'},
+              {code:'B',label:'按材料一级分类设置系数（如结构原料×1.15，装修类×1.20）'},
+              {code:'C',label:'按材料二级分类设置系数（更细粒度）'},
+              {code:'D',label:'按供应商设置系数'},
+              {code:'E',label:'其他方式：',hasInput:true}
+            ]},
+            {id:'Q3_1b',title:'Q3.1b 系数由谁配置？',options:[
+              {code:'A',label:'仅公司管理层'},
+              {code:'B',label:'超级管理员+公司管理层'},
+              {code:'C',label:'其他：',hasInput:true}
+            ]},
+            {id:'Q3_1c',title:'Q3.1c 系数值是否对方案预算人员可见？',options:[
+              {code:'A',label:'完全不可见（仅看到系数后价格，无法推算原价）'},
+              {code:'B',label:'可见（预算人员需要了解加价比例）'}
+            ]},
+            {id:'Q3_1d',title:'Q3.1d 系数配置是否需要审批？',options:[
+              {code:'A',label:'不需要审批，管理层直接配置生效'},
+              {code:'B',label:'需要审批（审批人：',hasInput:true,inputLabel:'审批人',closeText:'）'}
+            ]}
+          ], note:true },
+        { id:'Q3_2', priority:'mid', title:'Q3.2 [中优先级] 材料详情页供应商报价区的权限处理：技术人员和库管人员不可见价格，但材料详情页包含供应商报价区。无权限角色查看时如何处理？',
+          options:[
+            {code:'A',label:'隐藏整个报价区（不显示该区域）'},
+            {code:'B',label:'报价区显示暂无权限查看请联系管理员提示'},
+            {code:'C',label:'显示供应商名称，但价格列显示为"***"或"--"'},
+            {code:'D',label:'其他：',hasInput:true}
+          ], note:true },
+        { id:'Q3_3', priority:'mid', title:'Q3.3 [中优先级] 供应商成本结构字段：当前设计为除管理员外所有角色不可见，但数据库中该字段是否存在？请确认：',
+          subQuestions:[
+            {id:'Q3_3a',title:'Q3.3a 供应商档案中是否需要录入"成本结构"信息？',options:[
+              {code:'A',label:'需要，包含供应商的成本构成数据（原材料成本/加工费/运输费等）'},
+              {code:'B',label:'不需要，本期不涉及供应商成本结构'},
+              {code:'C',label:'需要，但仅管理层可查看，其他角色完全不可见'}
+            ]}
+          ], note:true },
+        { id:'Q3_4', priority:'mid', title:'Q3.4 [中优先级] 审批流程是否需要支持转办和加签？',
+          options:[
+            {code:'A',label:'本期需要支持（转办：转给他人处理；加签：增加审批人）'},
+            {code:'B',label:'本期不需要，仅支持通过/驳回/退回，V1.1再考虑'},
+            {code:'C',label:'仅支持转办，不支持加签'}
+          ], note:true },
+        { id:'Q3_5', priority:'mid', title:'Q3.5 [中优先级] 审批超时升级规则确认：当前设计为3个工作日未审批自动升级至部门总监。总监仍未审批时如何处理？',
+          options:[
+            {code:'A',label:'继续升级至更高层级（如总经理）'},
+            {code:'B',label:'标记为超时待处理，通知系统管理员介入'},
+            {code:'C',label:'超时',inlineInput:{id:'Q3_5_C_days',unit:'天后自动通过(N=____天)',type:'number'}},
+            {code:'D',label:'不自动处理，仅催办提醒'}
+          ], note:true },
+      ]}
+    ]
+  },
+  {
+    icon: '&#x1F4E6;', iconBg: '#FEF3C7', iconColor: '#D97706',
+    title: '第二部分：供应商管理调研', badge: 'mid',
+    desc: '关联模块：供应商管理→供应商档案、供应商信息同步 | 评审问题：B-03/B-06',
+    questions: [
+      { id:'Q4_1', priority:'mid', title:'Q4.1 [中优先级] 供应商信息同步规则确认。请确认：',
+        isGroup:true, subQuestions:[
+          {id:'Q4_1a',title:'Q4.1a 外部系统供应商信息变更时，本系统如何处理？',options:[
+            {code:'A',label:'直接触发人工确认流程，关键信息（名称/银行账户/联系人）变更需确认后更新'},
+            {code:'B',label:'非关键字段自动更新，关键字段（名称/银行账户/联系人）需人工确认'},
+            {code:'C',label:'全部直接更新，仅记录变更日志'},
+            {code:'D',label:'全部创建冲突记录，等待人工裁决'}
+          ]},
+          {id:'Q4_1b',title:'Q4.1b 冲突裁决超时（7天未处理）后，是否自动采用外部系统数据覆盖？',options:[
+            {code:'A',label:'是，超时自动覆盖（以外部系统为准）'},
+            {code:'B',label:'否，超时后仅催办，不做自动覆盖'},
+            {code:'C',label:'视字段敏感度：非敏感字段超时自动覆盖，敏感字段必须人工确认'}
+          ]}
+        ], note:true },
+      { id:'Q4_2', priority:'mid', title:'Q4.2 [中优先级] 采购申请中是否需要关联项目？',
+        options:[
+          {code:'A',label:'需要，采购申请需选择关联项目（用于项目维度材料成本统计）'},
+          {code:'B',label:'不需要，本期不做项目管理关联'},
+          {code:'C',label:'可选填写，非必填（文本字段手动输入项目名称即可）'}
+        ], subQuestions:[
+          {id:'Q4_2a',showWhen:'A',title:'Q4.2a 项目数据从哪里来？',options:[
+            {code:'A',label:'本系统自建项目列表（简易版）'},
+            {code:'B',label:'从OA/ERP系统同步项目数据'},
+            {code:'C',label:'手动填写项目编号/名称'}
+          ]}
+        ], note:true },
+    ]
+  },
+  {
+    icon: '&#x1F6D2;', iconBg: '#FEE2E2', iconColor: '#DC2626',
+    title: '第三部分：采购管理调研', badge: 'high',
+    desc: '关联模块：采购管理→采购申请、采购审批、验收管理 | 评审问题：J-02/P-01/P-02',
+    questions: [
+      { id:'Q5_1', priority:'high', title:'Q5.1 [高优先级] 采购申请提交流程确认。请描述贵司一次典型采购的场景：',
+        type:'scenarios', scenarios:[
+          {name:'场景A：同一供应商采购多种材料',desc:'例如：向某某钢铁公司同时采购方管、带钢、彩涂板',current:'当前原型流程：每种材料需单独提交一份申请→单独审批→单独选择供应商→单独生成订单',id:'Q5_1_sceneA'},
+          {name:'场景B：一种材料需从多个供应商采购',desc:'例如：需采购100吨方管，A供应商供60吨，B供应商供40吨',current:'当前原型流程：不支持，一个订单只能对应一个供应商',id:'Q5_1_sceneB'}
+        ], note:true },
+      { id:'Q5_2', priority:'mid', title:'Q5.2 [中优先级] 采购审批层级确认：当前设计为多级可配置，请确认贵司实际审批层级：',
+        type:'approvalLevels', note:true },
+    ]
+  },
+  {
+    icon: '&#x1F4B0;', iconBg: '#FEF3C7', iconColor: '#D97706',
+    title: '第四部分：价格管理调研', badge: 'mid',
+    desc: '关联模块：价格管理→价格维护、价格审批 | 评审问题：J-03/P-03',
+    questions: [
+      { id:'Q6_1', priority:'mid', title:'Q6.1 [中优先级] 价格审批层级判断规则确认：当前设计为变动≤20%且≤5000元→单级审批；否则→双级审批。请确认：',
+        options:[
+          {code:'A',label:'同意当前规则（≤20%且≤5000元→单级；否则→双级）'},
+          {code:'B',label:'需要调整阈值（变动幅度',inlineInput:{id:'Q6_1_pct',unit:'%',type:'number'},inlineInput2:{id:'Q6_1_amt',unit:'元',type:'number'},labelEnd:'）'},
+          {code:'C',label:'不按变动幅度判断，统一走固定审批层级（',inlineInput:{id:'Q6_1_level',unit:'级',type:'number'},labelEnd:'）'},
+          {code:'D',label:'按材料分类设置不同阈值'}
+        ], note:true },
+      { id:'Q6_2', priority:'mid', title:'Q6.2 [中优先级] 价格到期后的业务处理：当前设计为到期自动标记已失效。请确认：',
+        isGroup:true, subQuestions:[
+          {id:'Q6_2a',title:'Q6.2a 价格到期后，该材料-供应商组合的采购订单是否可以继续使用该价格？',options:[
+            {code:'A',label:'可以，已确认的订单使用快照价格，不受到期影响（当前设计）'},
+            {code:'B',label:'不可以，价格到期后该供应商不可选，需先续价'}
+          ]},
+          {id:'Q6_2b',title:'Q6.2b 价格到期前多少天开始预警提醒？',options:[
+            {code:'A',label:'30天（当前设计）'},
+            {code:'B',label:'其他：',inlineInput:{id:'Q6_2b_days',unit:'天',type:'number'}}
+          ]}
+        ], note:true },
+    ]
+  },
+  {
+    icon: '&#x1F4CA;', iconBg: '#FEF3C7', iconColor: '#D97706',
+    title: '第五部分：履约管理调研', badge: 'mid',
+    questions: [
+      { id:'Q7_1', priority:'mid', title:'Q7.1 [中优先级] 供应商绩效评估指标权重确认：', type:'weights', note:true },
+      { id:'Q7_2', priority:'mid', title:'Q7.2 [中优先级] 绩效考核周期：',
+        options:[{code:'A',label:'月度考核'},{code:'B',label:'季度考核'},{code:'C',label:'半年度考核'},{code:'D',label:'年度考核'},{code:'E',label:'按订单考核（每笔订单完成后即评估）'}], note:true },
+      { id:'Q7_3', priority:'mid', title:'Q7.3 [中优先级] 供应商评级与绩效的联动规则：绩效得分是否自动影响供应商等级(A/B/C/D)？',
+        options:[
+          {code:'A',label:'自动联动（如连续两季度绩效≥90分自动升级，≤60分自动降级）'},
+          {code:'B',label:'人工决策（系统仅提供绩效数据参考，等级调整需人工操作+审批）'},
+          {code:'C',label:'半自动（系统给出建议等级，采购管理员确认后生效）'}
+        ], note:true },
+    ]
+  },
+  {
+    icon: '&#x2699;', iconBg: '#D1FAE5', iconColor: '#059669',
+    title: '第六部分：系统管理与安全调研', badge: 'low',
+    questions: [
+      { id:'Q8_1', priority:'low', title:'Q8.1 [低优先级] 登录锁定后管理员解锁机制：',
+        options:[{code:'A',label:'需要管理员手动解锁（当前设计仅自动30分钟后解锁）'},{code:'B',label:'管理员可手动解锁+等待30分钟自动解锁（双重机制）'},{code:'C',label:'仅等待自动解锁即可'}], note:true },
+      { id:'Q8_2', priority:'low', title:'Q8.2 [低优先级] 当前9个角色是否满足业务需求？是否需要增减？', type:'roles', note:true },
+    ]
+  },
+  {
+    icon: '&#x1F680;', iconBg: '#FEF3C7', iconColor: '#D97706',
+    title: '第七部分：实施计划调研', badge: 'mid',
+    questions: [
+      { id:'Q9_1', priority:'mid', title:'Q9.1 [中优先级] 数据迁移确认：贵司目前有哪些数据需要迁移到新系统？', type:'migration', note:true },
+      { id:'Q9_2', priority:'mid', title:'Q9.2 [中优先级] 用户培训方式偏好：',
+        options:[{code:'A',label:'集中现场培训（1-2次，分角色）'},{code:'B',label:'线上视频培训+操作手册'},{code:'C',label:'两者结合（先线上预习，再现场实操）'},{code:'D',label:'关键用户培训后由其培训其他同事'}], note:true },
+      { id:'Q9_3', priority:'mid', title:'Q9.3 [中优先级] 系统上线方式偏好：',
+        options:[{code:'A',label:'一次性全面上线（所有模块同时上线）'},{code:'B',label:'分批上线（先上线材料库+供应商+价格，再上线采购+履约）'},{code:'C',label:'双轨并行（新旧系统并行运行1个月，逐步切换）'}], note:true },
+    ]
+  },
+  {
+    icon: '&#x1F4AC;', iconBg: '#E0E7FF', iconColor: '#4F46E5',
+    title: '第八部分：其他补充', badge: null,
+    questions: [
+      { id:'Q10_1', title:'Q10.1 除以上问题外，是否有其他业务需求或场景尚未在当前需求文档中覆盖？', type:'textarea' },
+      { id:'Q10_2', title:'Q10.2 对当前原型方案（整合版高保真原型V3.0）是否有修改意见？', type:'textarea' },
+      { id:'Q10_3', title:'Q10.3 对系统整体优先级排序是否有调整建议？', type:'textarea', hint:'当前排序：P0（材料库+供应商+价格+采购+履约+报表+系统管理）→ P1（退货+紧急采购+移动端+价格趋势+自定义报表）' },
+    ]
+  }
+];
+
+// ============ RENDER ============
+function renderOption(qId, opt) {
+  let html = '<label class="option-item" onclick="selectRadio(this,\''+qId+'\')">';
+  html += '<input type="radio" name="'+qId+'" value="'+opt.code+'">';
+  html += '<span class="option-code">'+opt.code+'</span>';
+  html += '<span class="option-label">'+opt.label;
+  if (opt.inlineInput) html += '<input class="inline-input" type="'+(opt.inlineInput.type||'text')+'" id="'+opt.inlineInput.id+'" placeholder="">'+opt.inlineInput.unit;
+  if (opt.inlineInput2) html += '，金额<input class="inline-input" type="'+(opt.inlineInput2.type||'text')+'" id="'+opt.inlineInput2.id+'" placeholder="">'+opt.inlineInput2.unit;
+  if (opt.labelEnd) html += opt.labelEnd;
+  if (opt.hasInput) html += '<input class="inline-input" type="text" id="'+qId+'_'+opt.code+'_text" placeholder="请说明">';
+  html += '</span></label>';
+  return html;
+}
+
+function renderQuestion(q) {
+  let h = '<div class="question" data-q="'+q.id+'"><div class="q-title">'+q.title+'</div>';
+  
+  if (q.desc) h += '<div class="q-desc">'+q.desc+'</div>';
+  
+  // Main options
+  if (q.options) {
+    h += '<div class="option-group">';
+    q.options.forEach(o => { h += renderOption(q.id, o); });
+    h += '</div>';
+  }
+  
+  // Special types
+  if (q.type === 'scenarios') {
+    q.scenarios.forEach(s => {
+      h += '<div style="background:var(--gray-50);border-radius:8px;padding:14px;margin-bottom:10px;">';
+      h += '<div style="font-size:13px;font-weight:600;margin-bottom:6px;">'+s.name+'</div>';
+      h += '<div style="font-size:12px;color:var(--gray-500);margin-bottom:4px;">'+s.desc+'</div>';
+      h += '<div style="font-size:11px;color:var(--gray-400);margin-bottom:6px;">'+s.current+'</div>';
+      h += '<textarea class="text-input" id="'+s.id+'" placeholder="请描述您期望的流程..." rows="2"></textarea>';
+      h += '</div>';
+    });
+  }
+  
+  if (q.type === 'approvalLevels') {
+    h += '<table class="table-input"><thead><tr><th>采购金额范围</th><th>审批层级</th><th>审批人</th></tr></thead><tbody>';
+    h += '<tr><td>≤ <input type="number" id="Q5_2_amt1" style="width:70px;"> 元</td><td><select id="Q5_2_lv1"><option value="">请选择</option><option>免审批</option><option>单级</option></select></td><td><input type="text" id="Q5_2_appr1" placeholder="审批人"></td></tr>';
+    h += '<tr><td><input type="number" id="Q5_2_amt2s" style="width:60px;"> ~ <input type="number" id="Q5_2_amt2e" style="width:60px;"> 元</td><td><select id="Q5_2_lv2"><option value="">请选择</option><option>单级</option><option>双级</option></select></td><td><input type="text" id="Q5_2_appr2" placeholder="审批人1→2"></td></tr>';
+    h += '<tr><td>> <input type="number" id="Q5_2_amt3" style="width:70px;"> 元</td><td><select id="Q5_2_lv3"><option value="">请选择</option><option>双级</option><option>三级</option></select></td><td><input type="text" id="Q5_2_appr3" placeholder="审批人1→2→3"></td></tr>';
+    h += '</tbody></table>';
+  }
+  
+  if (q.type === 'weights') {
+    h += '<table class="table-input"><thead><tr><th>指标</th><th>默认权重</th><th>贵司期望权重(%)</th><th>数据来源</th></tr></thead><tbody>';
+    h += '<tr><td>质量合格率</td><td>40%</td><td><input type="number" id="Q7_1_w1" min="0" max="100"></td><td>验收记录自动计算</td></tr>';
+    h += '<tr><td>交期准时率</td><td>40%</td><td><input type="number" id="Q7_1_w2" min="0" max="100"></td><td>到货记录自动计算</td></tr>';
+    h += '<tr><td>服务响应评分</td><td>20%</td><td><input type="number" id="Q7_1_w3" min="0" max="100"></td><td>人工评分</td></tr>';
+    h += '</tbody></table>';
+  }
+  
+  if (q.type === 'roles') {
+    const roles = ['超级管理员','技术管理员','采购管理员','采购专员','技术人员','库管人员','方案预算人员','部门主管','公司管理层'];
+    h += '<table class="table-input"><thead><tr><th>当前角色</th><th>保留</th><th>删除</th><th>备注</th></tr></thead><tbody>';
+    roles.forEach((r,i) => {
+      h += '<tr><td>'+r+'</td><td><input type="checkbox" id="Q8_2_r'+i+'_keep" value="是"></td><td><input type="checkbox" id="Q8_2_r'+i+'_del" value="否"></td><td><input type="text" id="Q8_2_r'+i+'_note" placeholder="备注"></td></tr>';
+    });
+    h += '</tbody></table>';
+    h += '<div style="margin-top:10px;font-size:12px;font-weight:600;">需要新增的角色：</div>';
+    h += '<table class="table-input" style="margin-top:4px;"><thead><tr><th>角色名称</th><th>适用岗位</th><th>核心职责</th><th>涉及模块</th></tr></thead><tbody>';
+    for (let i=1;i<=2;i++) h += '<tr><td><input id="Q8_2_new'+i+'_name"></td><td><input id="Q8_2_new'+i+'_pos"></td><td><input id="Q8_2_new'+i+'_duty"></td><td><input id="Q8_2_new'+i+'_mod"></td></tr>';
+    h += '</tbody></table>';
+  }
+  
+  if (q.type === 'migration') {
+    const items = [{name:'材料基础数据',idx:1,methods:['Excel','旧系统','纸质']},{name:'供应商数据',idx:2,methods:['Excel','旧系统','纸质']},{name:'价格历史数据',idx:3,methods:['Excel','旧系统','无']},{name:'采购历史数据',idx:4,methods:['Excel','旧系统','无']}];
+    h += '<table class="table-input"><thead><tr><th>数据类型</th><th>当前管理方式</th><th>数据量估算</th><th>迁移优先级</th></tr></thead><tbody>';
+    items.forEach(it => {
+      h += '<tr><td>'+it.name+'</td><td><select id="Q9_1_m'+it.idx+'_method"><option value="">请选择</option>';
+      it.methods.forEach(m => h += '<option>'+m+'</option>');
+      h += '</select></td><td><input id="Q9_1_m'+it.idx+'_count" placeholder="约___条"></td><td><select id="Q9_1_m'+it.idx+'_pri"><option value="">请选择</option><option>高</option><option>中</option><option>低</option></select></td></tr>';
+    });
+    h += '</tbody></table>';
+  }
+  
+  if (q.type === 'textarea') {
+    h += (q.hint ? '<div style="font-size:11px;color:var(--gray-400);margin-bottom:6px;">'+q.hint+'</div>' : '');
+    h += '<textarea class="text-input" id="'+q.id+'" placeholder="请输入..." rows="3"></textarea>';
+  }
+  
+  // Sub-questions
+  if (q.subQuestions) {
+    q.subQuestions.forEach(sq => {
+      const isSubStyle = !q.isGroup;
+      h += '<div class="sub-question" id="sub_'+sq.id+'" style="'+(isSubStyle?'':'margin-top:10px;padding-left:0;border-left:none;')+'">';
+      h += '<div class="q-title">'+sq.title+'</div>';
+      if (sq.options) {
+        h += '<div class="option-group">';
+        sq.options.forEach(o => { h += renderOption(sq.id, o); });
+        h += '</div>';
+      }
+      h += '</div>';
+    });
+  }
+  
+  if (q.note) h += '<div style="margin-top:8px;"><input type="text" class="text-input" id="'+q.id+'_note" placeholder="补充说明（选填）"></div>';
+  
+  h += '</div>';
+  return h;
+}
+
+// Build HTML
+let html = '';
+sections.forEach(sec => {
+  const badgeHtml = sec.badge ? '<span class="badge badge-'+sec.badge+'">'+{high:'高优先级',mid:'中优先级',low:'低优先级'}[sec.badge]+'</span>' : '';
+  html += '<div class="section-card"><div class="section-header" onclick="toggleSection(this)"><div class="section-icon" style="background:'+sec.iconBg+';color:'+sec.iconColor+';">'+sec.icon+'</div><h2>'+sec.title+badgeHtml+'</h2><span class="section-toggle">&#9660;</span></div>';
+  html += '<div class="section-body">';
+  if (sec.desc) html += '<div class="q-desc">'+sec.desc+'</div>';
+  
+  if (sec.subSections) {
+    sec.subSections.forEach(ss => {
+      html += '<h3 style="font-size:13px;color:var(--primary);margin:20px 0 14px;padding-bottom:6px;border-bottom:1px solid var(--gray-200);">'+ss.name+'</h3>';
+      ss.questions.forEach(q => { html += renderQuestion(q); });
+    });
+  } else if (sec.questions) {
+    sec.questions.forEach(q => { html += renderQuestion(q); });
+  }
+  
+  html += '</div></div>';
+});
+
+document.getElementById('sections').innerHTML = html;
+
+// ============ INTERACTIONS ============
+function toggleSection(header) {
+  const body = header.nextElementSibling;
+  const toggle = header.querySelector('.section-toggle');
+  body.classList.toggle('hidden');
+  toggle.classList.toggle('collapsed');
+}
+
+function selectRadio(label, qId) {
+  const group = label.closest('.option-group') || label.parentElement;
+  group.querySelectorAll('.option-item').forEach(i => i.classList.remove('selected'));
+  label.classList.add('selected');
+  handleConditionals(qId, label.querySelector('input').value);
+  updateProgress();
+}
+
+function handleConditionals(qId, val) {
+  // Q2.1 -> A,C shows Q2.1a
+  if (qId==='Q2_1') { const s=document.getElementById('sub_Q2_1a'); if(s) s.style.display=(val==='A'||val==='C')?'block':'none'; }
+  // Q2.2 -> A shows Q2.2a
+  if (qId==='Q2_2') { const s=document.getElementById('sub_Q2_2a'); if(s) s.style.display=val==='A'?'block':'none'; }
+  // Q4.2 -> A shows Q4.2a
+  if (qId==='Q4_2') { const s=document.getElementById('sub_Q4_2a'); if(s) s.style.display=val==='A'?'block':'none'; }
+}
+
+function updateProgress() {
+  const filled = document.querySelectorAll('input[type="radio"]:checked').length + [...document.querySelectorAll('textarea.text-input')].filter(t=>t.value.trim()).length;
+  const pct = Math.min(100, Math.round((filled/TOTAL_Q)*100));
+  document.getElementById('progressFill').style.width = pct+'%';
+  document.getElementById('progressText').textContent = '已填写 '+filled+' / '+TOTAL_Q+' 题';
+}
+
+document.querySelectorAll('textarea.text-input,.text-input').forEach(el => el.addEventListener('input', updateProgress));
+
+// ============ SUBMIT ============
+function collectAnswers() {
+  const a = {};
+  document.querySelectorAll('input[type="radio"]:checked').forEach(r => {
+    let v = r.value;
+    // Append inline input values
+    const parent = r.closest('.option-label');
+    if (parent) {
+      parent.querySelectorAll('.inline-input').forEach(inp => {
+        if (inp.value) v += '('+inp.value+(inp.id.includes('pct')?'%':inp.id.includes('amt')||inp.id.includes('amount')?'元':'')+')';
+      });
+    }
+    a[r.name] = v;
+  });
+  // Extra text inputs for "other" options
+  document.querySelectorAll('.inline-input').forEach(inp => {
+    if (inp.value && inp.type === 'text' && inp.id.includes('_text')) {
+      a[inp.id] = inp.value;
+    }
+  });
+  // Scenarios
+  ['Q5_1_sceneA','Q5_1_sceneB'].forEach(id => { const el=document.getElementById(id); if(el&&el.value) a[id]=el.value; });
+  // Approval levels
+  a['Q5_2_levels'] = {
+    lv1:{amt:document.getElementById('Q5_2_amt1')?.value,type:document.getElementById('Q5_2_lv1')?.value,approver:document.getElementById('Q5_2_appr1')?.value},
+    lv2:{from:document.getElementById('Q5_2_amt2s')?.value,to:document.getElementById('Q5_2_amt2e')?.value,type:document.getElementById('Q5_2_lv2')?.value,approver:document.getElementById('Q5_2_appr2')?.value},
+    lv3:{amt:document.getElementById('Q5_2_amt3')?.value,type:document.getElementById('Q5_2_lv3')?.value,approver:document.getElementById('Q5_2_appr3')?.value}
+  };
+  // Weights
+  a['Q7_1_weights'] = {quality:document.getElementById('Q7_1_w1')?.value,delivery:document.getElementById('Q7_1_w2')?.value,service:document.getElementById('Q7_1_w3')?.value};
+  // Roles
+  const roles = ['超级管理员','技术管理员','采购管理员','采购专员','技术人员','库管人员','方案预算人员','部门主管','公司管理层'];
+  const ra = {};
+  roles.forEach((r,i) => {
+    const k=document.getElementById('Q8_2_r'+i+'_keep')?.checked?'是':'';
+    const d=document.getElementById('Q8_2_r'+i+'_del')?.checked?'否':'';
+    const n=document.getElementById('Q8_2_r'+i+'_note')?.value;
+    if(k||d) ra[r]={keep:k,delete:d,note:n||''};
+  });
+  a['Q8_2_roles'] = ra;
+  a['Q8_2_new'] = [1,2].map(i=>({name:document.getElementById('Q8_2_new'+i+'_name')?.value,pos:document.getElementById('Q8_2_new'+i+'_pos')?.value,duty:document.getElementById('Q8_2_new'+i+'_duty')?.value,mod:document.getElementById('Q8_2_new'+i+'_mod')?.value}));
+  // Migration
+  const mi = ['material','supplier','price','purchase'];
+  const ma = {};
+  mi.forEach((m,i) => {
+    ma[m] = {method:document.getElementById('Q9_1_m'+(i+1)+'_method')?.value,count:document.getElementById('Q9_1_m'+(i+1)+'_count')?.value,priority:document.getElementById('Q9_1_m'+(i+1)+'_pri')?.value};
+  });
+  a['Q9_1_migration'] = ma;
+  // Open-ended
+  ['Q10_1','Q10_2','Q10_3'].forEach(id => { const el=document.getElementById(id); if(el&&el.value) a[id]=el.value; });
+  // Notes
+  document.querySelectorAll('[id$="_note"]').forEach(el => { if(el.value&&el.value.trim()) a[el.id]=el.value.trim(); });
+  return a;
+}
+
+async function submitSurvey() {
+  const name = document.getElementById('resp_name').value.trim();
+  const company = document.getElementById('resp_company').value.trim();
+  if (!name || !company) { alert('请填写姓名和公司/部门'); return; }
+  
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.textContent = '提交中...';
+  
+  try {
+    const record = {
+      id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+      respondent: name,
+      company: company,
+      phone: document.getElementById('resp_phone').value.trim(),
+      email: document.getElementById('resp_email').value.trim(),
+      answers: collectAnswers(),
+      submittedAt: new Date().toISOString(),
+      duration: Math.round((Date.now()-startTime)/1000)
+    };
+    
+    // Save to LocalStorage
+    const STORAGE_KEY = 'survey_submissions';
+    let submissions = [];
+    try { submissions = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); } catch {}
+    submissions.push(record);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(submissions));
+    
+    document.getElementById('successOverlay').classList.add('show');
+  } catch(e) {
+    alert('保存失败：'+e.message);
+    btn.disabled = false;
+    btn.textContent = '提交问卷';
+  }
+}
+</script>
+</body>
+</html>
